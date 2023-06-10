@@ -1,4 +1,4 @@
-// This header contains a few functions to be used if the GNU builtin functions
+// This header contains a few functions to be used if the intrinsic functions
 // are unavailable. I doubt these are substantial or original enough to warrant
 // copyright.
 #ifndef BITMANIP_H_INCLUDED

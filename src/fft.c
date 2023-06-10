@@ -10,8 +10,13 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "bitmanip.h"
+
+void print_complex(double complex *x, int N) {
+  for (int i = 0; i < N; i++) printf("%f,%f\n", creal(x[i]), cimag(x[i]));
+}
 
 void fft(double complex X[], int n) {
   if (n == 1) return;
@@ -95,7 +100,7 @@ void heapsort(int list[], int N) {
   }
 }
 
-void partition_fft(int N, int parts[], int nodes) {
+void partition_pow2(int N, int parts[], int nodes) {
   assert((N & (N - 1)) == 0);  // Must be a power of two
   parts[0] = N;
 
@@ -119,6 +124,27 @@ void partition_fft(int N, int parts[], int nodes) {
 
   // Get these block sizes in order!
   heapsort(parts, nodes);
+}
+
+void result_targets(int result_size[], int result_dest[], int parts[],
+                    int nodes) {
+  int start = 0;
+  while (parts[start] == 0) start++;  // not enough work to go around
+
+  memcpy(result_size, parts, sizeof(int) * nodes);
+
+  for (int i = result_size[start]; i <= result_size[nodes - 1]; i *= 2) {
+    for (int j = start; j < nodes - 1; j++) {
+      for (int k = j + 1; k < nodes; k++) {
+        if (result_size[j] == i && result_size[k] == i) {
+          result_size[k] += result_size[j];
+          result_dest[j] = k + 1;  // zero to one indexed
+          break;
+        }
+      }
+    }
+  }
+  result_dest[nodes - 1] = 0;  // return final response to head-node
 }
 
 void bit_reversal_permutation(double complex *x, int N) {
