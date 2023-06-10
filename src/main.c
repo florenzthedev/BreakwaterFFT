@@ -32,10 +32,11 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < N; i++) printf("%f + %fi, ", creal(x[i]), cimag(x[i]));
     printf("\n");
 
-  
     free(x);
   }
-printf("its finalize causing the crash\n");
+
+  printf("Hello, world!\n");
+
   err = MPI_Finalize();
 
   return 0;

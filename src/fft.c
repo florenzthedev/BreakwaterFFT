@@ -4,12 +4,13 @@
 #define INIT_BLOCK_SIZE 8
 #define M_TAU 6.28318530717958647692
 
+#include "fft.h"
+
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fft.h"
 #include "bitmanip.h"
 
 void fft(double complex X[], int n) {
@@ -42,11 +43,11 @@ double complex *csv2cmplx(const char *filename, int *N) {
   int allocated = INIT_BLOCK_SIZE;
   (*N) = 0;
   while (fscanf(fp, "%lf,%lf", &temp_real, &temp_imag) > 0) {
-    x[(*N)++] = CMPLX(temp_real, temp_imag);
     if ((*N) == allocated) {
-      x = realloc(x, allocated *= 2);
+      x = realloc(x, (allocated *= 2) * sizeof(double complex));
       assert(x != NULL);
     }
+    x[(*N)++] = CMPLX(temp_real, temp_imag);
   }
   fclose(fp);
 
@@ -123,7 +124,8 @@ void partition_fft(int N, int parts[], int nodes) {
 void bit_reversal_permutation(double complex *x, int N) {
   assert((N & (N - 1)) == 0);  // Must be a power of two
 
-  int bl = bit_length(N);
+  // Don't forget bit_length is one indexed!
+  int bl = bit_length(N) - 1;
 
   // We can skip the first and last index, they never need to be moved
   for (int i = 1; i < N - 1; i++) {

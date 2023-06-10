@@ -36,7 +36,10 @@ $(BINDIR):
 .PHONY: clean
 
 test: $(EXEC)
-	mpiexec -n 4 ./$(EXEC) $(TSTDIR)/test.csv
+	@echo ----  TEST 1  ----
+	mpiexec -n 4 ./$(EXEC) $(TSTDIR)/test1.csv
+	@echo ----  TEST 2  ----
+	mpiexec -n 4 ./$(EXEC) $(TSTDIR)/test2.csv
 
 clean:
 	rm -f $(OBJDIR)/*.o core
