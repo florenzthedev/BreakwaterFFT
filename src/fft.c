@@ -1,7 +1,7 @@
 //  Copyright (c) 2023 Zachary Todd Edwards
 //  MIT License
 
-#define INIT_BLOCK_SIZE 8
+#define INIT_BLOCK_SIZE 4
 #define M_TAU 6.28318530717958647692
 
 #include "fft.h"
@@ -188,16 +188,16 @@ void fft_buffer_add(fft_buffer buf, double complex *x, int n) {
 }
 
 double complex *fft_buffer_search(fft_buffer buf, int n) {
-  while(buf->next != NULL){
+  while (buf->next != NULL) {
     buf = buf->next;
-    if(buf->n == n) return buf->x;
+    if (buf->n == n) return buf->x;
   }
   return NULL;
 }
 
-void fft_buffer_free(fft_buffer *root){
+void fft_buffer_free(fft_buffer *root) {
   fft_buffer buf = (*root)->next;
-  while(buf != NULL){
+  while (buf != NULL) {
     fft_buffer temp = buf->next;
     free(buf->x);
     free(buf);

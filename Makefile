@@ -35,6 +35,12 @@ $(BINDIR):
 
 .PHONY: clean
 
+debug: CFLAGS += -g -D_DEBUG
+debug: clean $(EXEC)
+	@echo ----  Launching Test 1 With 2 Nodes  ----
+	mpiexec -n 3 ./$(EXEC) $(TSTDIR)/test1.csv
+	$(MAKE) clean
+
 test: $(EXEC)
 	@echo ----  TEST 1  ----
 	mpiexec -n 4 ./$(EXEC) $(TSTDIR)/test1.csv
