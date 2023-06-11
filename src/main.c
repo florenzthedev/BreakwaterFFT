@@ -49,9 +49,9 @@ int main(int argc, char* argv[]) {
     printf("Applying bit reversal permutation to input dataset.\n");
     bit_reversal_permutation(x, N);
 
-    //TODO Look into MPI_Scatterv, it looks like it can do this automatically
+    // TODO Look into MPI_Scatterv, it looks like it can do this automatically
     int data_start = 0;
-    for (int node = 1; node < nodes; node++) {
+    for (int node = 1; node <= nodes; node++) {
       printf("Sending initial header to node %i.\n", node);
       int index = node - 1;
       err = MPI_Send(
@@ -67,7 +67,24 @@ int main(int argc, char* argv[]) {
 
     free(x);
   } else {
+    MPI_Status status;
+    int header[HEADER_SIZE];
+    err = MPI_Recv(&header, HEADER_SIZE, MPI_INT, 0, SEND_HEADER_TAG,
+                   MPI_COMM_WORLD, &status);
+    assert(err == MPI_SUCCESS);
+    printf("Node %i received header.\n", node_id);
 
+    if (header[SUBSET_SIZE] == 0) {
+      printf("Node %i received subset size of 0, terminating.\n", node_id);
+      err = MPI_Finalize();
+      return 0;
+    }
+
+    int n = header[SUBSET_SIZE];
+    double complex x[n];
+    err = MPI_Recv(&x, n, MPI_DOUBLE_COMPLEX, 0, SEND_SUBSET_TAG,
+                   MPI_COMM_WORLD, &status);
+    printf("Node %i received subset of size %i.\n", node_id, n);
   }
 
   printf("Node %i finished.\n", node_id);
