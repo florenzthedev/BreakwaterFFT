@@ -15,18 +15,6 @@
 void print_complex(double complex *x, int N);
 
 /**
- * @brief The Fast-Fourier Transform algorithm, computes the Fourier transform
- * on a set of complex numbers. This is a recursive implementation and
- * overwrites the array it is passed. The input set must be a power of two in
- * size.
- *
- * @param X The input set of complex numbers, must be a power of two in size,
- * and will be overwritten by the results.
- * @param n The size of the input set.
- */
-void fft(double complex X[], int n);
-
-/**
  * @brief Reads in a csv file into an array of double complex. File is expected
  * to have one complex number on each line, with the real and imaginary parts
  * separated by a comma, eg. "1.23,4.56" This function will pad the resulting
@@ -78,5 +66,42 @@ void result_targets(int result_size[], int result_dest[], int parts[],
  * @param N The size of the array, must be a power of two.
  */
 void bit_reversal_permutation(double complex *x, int N);
+
+/**
+ * @brief A single FFT butterfly operation, used internally by fft_pass(). It is
+ * unlikely that this will need to be called externally on its own.
+ *
+ * @param X Dataset to perform butterfly operation on, will be overwritten and
+ * must be a power of two in size.
+ * @param n
+ * @param omega
+ */
+void fft_butterfly(double complex X[], int n, double complex omega);
+
+/**
+ * @brief A single pass of the Fast-Fourier Transform, used internally by fft()
+ * and on its own for consolidating two neighboring identically sized chunks of
+ * data that have already had the FFT performed on them. All parameters must be
+ * a power of two.
+ *
+ * @param X The input dataset of contiguous already-FFT'd data, will be
+ * overwritten and must be a power of two in size.
+ * @param N The total size of the input dataset.
+ * @param n The size of the butterfly operation to perform on the dataset. If
+ * this is being used two consolidate two already-FFT'd chunks of data this will
+ * probably be equal to N.
+ */
+void fft_pass(double complex X[], int N, int n);
+
+/**
+ * @brief The Fast-Fourier Transform algorithm, computes the Fourier transform
+ * on a set of complex numbers. The input array must be a power of two in size,
+ * already be in bit reversal permutation order, and will be overwritten.
+ *
+ * @param X The input set of complex numbers, must be a power of two in size,
+ * and will be overwritten by the results.
+ * @param n The size of the input set.
+ */
+void fft(double complex X[], int n);
 
 #endif  // FFT_H_INCLUDED

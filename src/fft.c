@@ -18,22 +18,21 @@ void print_complex(double complex *x, int N) {
   for (int i = 0; i < N; i++) printf("%f,%f\n", creal(x[i]), cimag(x[i]));
 }
 
-void fft(double complex X[], int n) {
-  if (n == 1) return;
-
-  double complex Ye[n / 2];
-  for (int j = 0; j < n; j += 2) Ye[j / 2] = X[j];
-  fft(Ye, n / 2);
-
-  double complex Yo[n / 2];
-  for (int j = 1; j < n; j += 2) Yo[j / 2] = X[j];
-  fft(Yo, n / 2);
-
-  double complex omega = cexp(-((I * M_TAU) / n));
+void fft_butterfly(double complex X[], int n, double complex omega) {
   for (int j = 0; j < n / 2; j++) {
-    X[j] = Ye[j] + cpow(omega, j) * Yo[j];
-    X[j + n / 2] = Ye[j] - cpow(omega, j) * Yo[j];
+    double complex product = cpow(omega, j) * X[j + n / 2];
+    X[j + n / 2] = X[j] - product;
+    X[j] = X[j] + product;
   }
+}
+
+void fft_pass(double complex X[], int N, int n) {
+  double complex omega = cexp(-((I * M_TAU) / n));
+  for (int j = 0; j < N; j += n) fft_butterfly(&X[j], n, omega);
+}
+
+void fft(double complex X[], int N){
+  for(int j = 2; j <= N; j *= 2) fft_pass(X, N, j);
 }
 
 double complex *csv2cmplx(const char *filename, int *N) {
