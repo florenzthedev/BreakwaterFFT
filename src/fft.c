@@ -31,8 +31,8 @@ void fft_pass(double complex X[], int N, int n) {
   for (int j = 0; j < N; j += n) fft_butterfly(&X[j], n, omega);
 }
 
-void fft(double complex X[], int N){
-  for(int j = 2; j <= N; j *= 2) fft_pass(X, N, j);
+void fft(double complex X[], int N) {
+  for (int j = 2; j <= N; j *= 2) fft_pass(X, N, j);
 }
 
 double complex *csv2cmplx(const char *filename, int *N) {
@@ -161,4 +161,48 @@ void bit_reversal_permutation(double complex *x, int N) {
       x[ri] = temp;
     }
   }
+}
+
+struct fft_buffer_s {
+  double complex *x;
+  int n;
+  struct fft_buffer_s *next;
+};
+
+fft_buffer fft_buffer_init() {
+  fft_buffer buf = malloc(sizeof(struct fft_buffer_s));
+  buf->next = NULL;
+  buf->x = NULL;
+  buf->n = 0;
+  return buf;
+}
+
+void fft_buffer_add(fft_buffer buf, double complex *x, int n) {
+  while (buf->next != NULL) buf = buf->next;  // locate last link
+  buf->next = malloc(sizeof(struct fft_buffer_s));
+  buf = buf->next;  // step into new link
+  buf->next = NULL;
+  buf->n = n;
+  buf->x = malloc(sizeof(double complex) * n);
+  memcpy(buf->x, x, sizeof(double complex) * n);
+}
+
+double complex *fft_buffer_search(fft_buffer buf, int n) {
+  while(buf->next != NULL){
+    buf = buf->next;
+    if(buf->n == n) return buf->x;
+  }
+  return NULL;
+}
+
+void fft_buffer_free(fft_buffer *root){
+  fft_buffer buf = (*root)->next;
+  while(buf != NULL){
+    fft_buffer temp = buf->next;
+    free(buf->x);
+    free(buf);
+    buf = temp;
+  }
+  free((*root));
+  root = NULL;
 }

@@ -80,11 +80,26 @@ int main(int argc, char* argv[]) {
       return 0;
     }
 
-    int n = header[SUBSET_SIZE];
-    double complex x[n];
-    err = MPI_Recv(&x, n, MPI_DOUBLE_COMPLEX, 0, SEND_SUBSET_TAG,
-                   MPI_COMM_WORLD, &status);
-    printf("Node %i received subset of size %i.\n", node_id, n);
+    double complex x[header[RESULT_SIZE]];
+    int data_start = header[RESULT_SIZE] - header[SUBSET_SIZE];
+    int data_size = header[SUBSET_SIZE];
+    err = MPI_Recv(&x[data_start], header[SUBSET_SIZE], MPI_DOUBLE_COMPLEX, 0,
+                   SEND_SUBSET_TAG, MPI_COMM_WORLD, &status);
+    printf("Node %i received subset of size %i.\n", node_id,
+           header[SUBSET_SIZE]);
+
+    //perform 
+    fft(&x[data_start], header[SUBSET_SIZE]);
+
+    while (data_start > 0) {
+      double complex temp[header[RESULT_SIZE]];
+      err = MPI_Recv(temp, header[RESULT_SIZE], MPI_DOUBLE_COMPLEX,
+                     MPI_ANY_SOURCE, SEND_RESULT_TAG, MPI_COMM_WORLD, &status);
+      int size_received = 0;
+      err = MPI_Get_count(&status, MPI_DOUBLE_COMPLEX, &size_received);
+      
+      
+    }
   }
 
   printf("Node %i finished.\n", node_id);

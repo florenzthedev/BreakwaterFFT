@@ -1,6 +1,17 @@
 //  Copyright (c) 2023 Zachary Todd Edwards
 //  MIT License
 
+/**
+ * @brief This library contains utilities for running the FFT across a
+ * distributed system. These calculations should be relatively implementation
+ * agnostic but were designed with MPI in mind. Many of the functions here
+ * require several small pre-allocated arrays, these are intended to be used
+ * with C99 variable length arrays (VLAs). If you are using this library from
+ * C++ using the internal array of a pre-sized vector would be a reasonable
+ * substitute.
+ *
+ */
+
 #ifndef FFT_H_INCLUDED
 #define FFT_H_INCLUDED
 #include <complex.h>
@@ -103,5 +114,51 @@ void fft_pass(double complex X[], int N, int n);
  * @param n The size of the input set.
  */
 void fft(double complex X[], int n);
+
+/**
+ * @brief Linked-list used for storing FFT-chunks received out-of-order. Members
+ * never need to be accessed directly, consider it an opaque handle. That is why
+ * the pointer is typedef'd.
+ *
+ */
+typedef struct fft_buffer_s *fft_buffer;
+
+/**
+ * @brief Creates a sentinel node for a fft_buffer. The fft_buffer operations
+ * assume this empty head node always exists.
+ *
+ * @return fft_buffer* Sentinel root node for a fft_buffer.
+ */
+fft_buffer fft_buffer_init();
+
+/**
+ * @brief Adds entry into a fft_buffer. Performs a deep copy.
+ *
+ * @param buf fft_buffer to add entry to.
+ * @param x Array of complex numbers, will be deep copied.
+ * @param n Size of array.
+ */
+void fft_buffer_add(fft_buffer buf, double complex *x, int n);
+
+/**
+ * @brief Searches the given fft_buffer for an entry of size n. Returns pointer
+ * to beginning of array if it does exist, NULL if it does not exist. Does not
+ * remove entry from buffer.
+ *
+ * @param buf fft_buffer to search through.
+ * @param n Entry size to search for, due to the nature of the FFT there should
+ * never be duplicate sizes but if there are it will return the first one found.
+ * @return double* Array of values for the given size if found, NULL if not
+ * found.
+ */
+double complex *fft_buffer_search(fft_buffer buf, int n);
+
+/**
+ * @brief Frees all of the memory associated with an fft_buffer and reassigns
+ * pointer to NULL.
+ *
+ * @param root fft_buffer to free memory from.
+ */
+void fft_buffer_free(fft_buffer *root);
 
 #endif  // FFT_H_INCLUDED
