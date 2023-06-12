@@ -67,6 +67,15 @@ void send_init_subsets(double complex data[], int parts[], int nodes);
 int recv_init_subset(double complex *data, int max);
 
 /**
+ * @brief 
+ * 
+ * @param data 
+ * @param size 
+ * @param dest 
+ */
+void send_results(double complex *data, int size, int dest);
+
+/**
  * @brief
  *
  * @param data

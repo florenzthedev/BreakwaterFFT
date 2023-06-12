@@ -15,10 +15,10 @@ EXEC = $(BINDIR)/breakwater
 
 LIBS = -lm
 
-_DEPS = fft.h
+_DEPS = fft.h messaging.h
 DEPS = $(patsubst %,$(HEDDIR)/%,$(_DEPS))
 
-_OBJ = main.o fft.o
+_OBJ = main.o fft.o messaging.o
 OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
 
 $(EXEC): $(OBJ)

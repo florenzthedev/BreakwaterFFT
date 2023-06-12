@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 
     send_init_subsets(data, parts, nodes);
 
-    // TODO get final result here.
+    recv_result_set(data, input_size);
 
     print_complex(data, input_size);
 
@@ -82,15 +82,10 @@ int main(int argc, char* argv[]) {
     // TODO More clever use of flow control could reduce redundant operations
     fft_buffer buf = fft_buffer_init();
     while (data_size < result_size) {
-      // The upper bounds on size should be this / 2, the extra space is
-      // just-in-case
+      // The upper bounds on size should actually be this / 2, the extra space
+      // is just-in-case
       double complex temp[result_size];
-
-      MPI_Recv(temp, header[RESULT_SIZE], MPI_DOUBLE_COMPLEX, MPI_ANY_SOURCE,
-               SEND_RESULT_TAG, MPI_COMM_WORLD, &status);
-      int size_received = 0;
-      MPI_Get_count(&status, MPI_DOUBLE_COMPLEX, &size_received);
-      printf("Node %i received result of size %i.\n", node_id, size_received);
+      int size_received = recv_result_set(temp, result_size);
 
       fft_buffer_add(buf, temp, size_received);
       double complex* match;
@@ -105,8 +100,7 @@ int main(int argc, char* argv[]) {
 
     printf("Node %i sending result of size %i to node %i.\n", node_id,
            result_size, result_dest);
-    MPI_Send(data, header[RESULT_SIZE], MPI_DOUBLE_COMPLEX, header[RESULT_DEST],
-             SEND_RESULT_TAG, MPI_COMM_WORLD);
+    send_results(data, result_size, result_dest);
   }
 
   printf("Node %i finished.\n", node_id);
