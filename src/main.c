@@ -15,19 +15,21 @@ int main(int argc, char* argv[]) {
 
   node_id = msg_init(&argc, &argv);
 
+  init_log(node_id, LOG__ALL);
+
 #ifdef _DEBUG
   printf("Node %i waiting 10 seconds for debugger attachment.\n", node_id);
   sleep(10);
 #endif  // debug
 
-  printf("Node %i starting.\n", node_id);
+  log_msg(LOG__INFO, "Starting...");
 
   if (node_id == 0)
     head_node(argv[1]);
   else
     data_node(node_id);
 
-  printf("Node %i finished.\n", node_id);
+  log_msg(LOG__INFO, "Finished!");
   msg_finalize();
   return 0;
 }

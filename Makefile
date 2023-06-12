@@ -8,29 +8,25 @@ CFLAGS = -Wall -I$(HEDDIR) -fcx-limited-range
 SRCDIR = ./src
 HEDDIR = ./include
 OBJDIR = ./obj
-BINDIR = .
 TSTDIR = ./tests
 
-EXEC = $(BINDIR)/breakwater
+EXEC = breakwater
 
 LIBS = -lm
 
-_DEPS = fft.h messaging.h node.h
+_DEPS = fft.h logging.h messaging.h node.h 
 DEPS = $(patsubst %,$(HEDDIR)/%,$(_DEPS))
 
-_OBJ = main.o fft.o messaging.o node.o
+_OBJ = main.o fft.o logging.o messaging.o node.o
 OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
 
 $(EXEC): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(LIBS) $(CFLAGS)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.c $(DEPS) $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.c $(DEPS) | $(OBJDIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(OBJDIR):
-	mkdir -p $@
-
-$(BINDIR):
 	mkdir -p $@
 
 .PHONY: clean

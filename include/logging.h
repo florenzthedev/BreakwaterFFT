@@ -6,21 +6,45 @@
 
 #include <stdio.h>
 
-#define LOG_INIT 0b10000000
-#define LOG_MSSG 0b01000000
-#define LOG_CALC 0b00100000
+#define LOG_TRACE 6
+#define LOG_DEBUG 5
+#define LOG__INFO 4
+#define LOG__WARN 3
+#define LOG_ERROR 2
+#define LOG_FATAL 1
 
-#define LOG_ALL 0b11111111
+#define LOG__ALL 10
+#define LOG_DFLT 5
+#define LOG_NONE 0
 
-extern int lognode;
-extern char loglevel;
-extern FILE *logger;
+/**
+ * @brief
+ *
+ * @param node_id
+ * @param loglvl
+ */
+void init_log(int node_id, char loglvl);
 
-#define SET_LOGNODE(nodeid) lognode = nodeid;
-#define SET_LOGLEVEL(logmask) loglevel = logmask;
-#define SET_LOGFILEP(logfile) logger = logfile;
+/**
+ * @brief
+ *
+ * @param node_id
+ * @param loglvl
+ * @param logfile
+ */
+void init_log_file(int node_id, char loglvl, FILE *logfile);
 
-#define LOG(level, fmt, ...) \
-  if (level | loglevel) fprintf(logger, fmt, __VA_ARGS__);
+/**
+ * @brief Adds a log message. Will always start the message with "%s Node %i: "
+ * where %s is the name of the log level and %i is the ID number registered with
+ * log_init or log_init_file. If either of those have not yet been called no
+ * message will be created. Will add a newline to the end of the message, will
+ * not add a period.
+ *
+ * @param level Level of log message.
+ * @param fmt Formatted string with message.
+ * @param ... Additional variables for the message.
+ */
+void log_msg(int level, const char *fmt, ...);
 
 #endif  // LOGGING_H_INCLUDED
