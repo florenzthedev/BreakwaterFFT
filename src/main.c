@@ -1,18 +1,14 @@
 //  Copyright (c) 2023 Zachary Todd Edwards
 //  MIT License
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 // TODO Add compatibility stuff for VSC++
 #ifdef _DEBUG
 #include <unistd.h>
 #endif  //_DEBUG
 
-#include "fft.h"
+#include "logging.h"
 #include "messaging.h"
+#include "node.h"
 
 int main(int argc, char* argv[]) {
   int node_id;
@@ -26,82 +22,10 @@ int main(int argc, char* argv[]) {
 
   printf("Node %i starting.\n", node_id);
 
-  if (node_id == 0) {
-    assert(argc > 1);
-
-    int nodes = get_node_count();
-    nodes--;  // Not counting node 0, us!
-
-    printf("Reading input dataset.\n");
-    int input_size = 0;
-    double complex* data = csv2cmplx(argv[1], &input_size);
-    assert(data != NULL);
-
-    printf("Calculating node partitions.\n");
-    int parts[nodes];
-    partition_pow2(input_size, parts, nodes);
-
-    printf("Building communication tree.\n");
-    int result_size[nodes];
-    int result_dest[nodes];
-    result_targets(result_size, result_dest, parts, nodes);
-
-    printf("Applying bit reversal permutation to input dataset.\n");
-    bit_reversal_permutation(data, input_size);
-
-    send_headers(parts, result_size, result_dest, nodes);
-
-    send_init_subsets(data, parts, nodes);
-
-    recv_result_set(data, input_size);
-
-    print_complex(data, input_size);
-
-    free(data);
-  } else {
-    int subset_size, result_size, result_dest;
-
-    recv_header(&subset_size, &result_size, &result_dest);
-    printf("Node %i received header.\n", node_id);
-
-    if (subset_size == 0) {
-      printf("Node %i received subset size of 0, terminating.\n", node_id);
-      msg_finalize();
-      return 0;
-    }
-
-    double complex data[result_size];
-    int data_start = result_size - subset_size;
-    int data_size = subset_size;
-    recv_init_subset(&data[data_start], subset_size);
-    printf("Node %i received subset of size %i.\n", node_id, subset_size);
-
-    // perform
-    fft(&data[data_start], subset_size);
-
-    // TODO More clever use of flow control could reduce redundant operations
-    fft_buffer buf = fft_buffer_init();
-    while (data_size < result_size) {
-      // The upper bounds on size should actually be this / 2, the extra space
-      // is just-in-case
-      double complex temp[result_size];
-      int size_received = recv_result_set(temp, result_size);
-
-      fft_buffer_add(buf, temp, size_received);
-      double complex* match;
-      while ((match = fft_buffer_search(buf, data_size)) != NULL) {
-        data_start -= data_size;
-        memcpy(&data[data_start], match, sizeof(double complex) * data_size);
-        data_size *= 2;
-        fft_pass(&data[data_start], data_size, data_size);
-      }
-    }
-    fft_buffer_free(&buf);
-
-    printf("Node %i sending result of size %i to node %i.\n", node_id,
-           result_size, result_dest);
-    send_results(data, result_size, result_dest);
-  }
+  if (node_id == 0)
+    head_node(argv[1]);
+  else
+    data_node(node_id);
 
   printf("Node %i finished.\n", node_id);
   msg_finalize();

@@ -58,20 +58,20 @@ void recv_header(int *subset_size, int *result_size, int *result_dest);
 void send_init_subsets(double complex data[], int parts[], int nodes);
 
 /**
- * @brief 
- * 
- * @param data 
- * @param max 
- * @return int 
+ * @brief
+ *
+ * @param data
+ * @param max
+ * @return int
  */
 int recv_init_subset(double complex *data, int max);
 
 /**
- * @brief 
- * 
- * @param data 
- * @param size 
- * @param dest 
+ * @brief
+ *
+ * @param data
+ * @param size
+ * @param dest
  */
 void send_results(double complex *data, int size, int dest);
 
@@ -85,7 +85,8 @@ void send_results(double complex *data, int size, int dest);
 int recv_result_set(double complex *data, int max);
 
 /**
- * @brief Stub function calling MPI_Finalize().
+ * @brief Stub function calling MPI_Barrier() and then MPI_Finalize(), does not
+ * quit program.
  *
  */
 void msg_finalize();
