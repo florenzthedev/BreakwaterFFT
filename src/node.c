@@ -3,7 +3,6 @@
 
 #include "node.h"
 
-#include <assert.h>
 #include <complex.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,9 +20,11 @@ void head_node(const char* filename) {
   double complex* data = csv2cmplx(filename, &input_size);
   if (data == NULL) {
     log_msg(LOG_FATAL, "Unable to read input file: %s", filename);
-    // TODO Add MPI Abort call
+    msg_abort();
   }
 
+  // The messaging functions contain their own logs but the fft functions do
+  // not, intentionally.
   log_msg(LOG__INFO, "Calculating node partitions.");
   int parts[nodes];
   partition_pow2(input_size, parts, nodes);
@@ -51,10 +52,9 @@ void data_node(int node_id) {
   int subset_size, result_size, result_dest;
 
   recv_header(&subset_size, &result_size, &result_dest);
-  log_msg(LOG__INFO, "Received header.");
 
   if (subset_size == 0) {
-    log_msg(LOG__INFO, "Received subset size of 0, terminating.");
+    log_msg(LOG__WARN, "Received subset size of 0, terminating.");
     return;
   }
 
@@ -62,7 +62,6 @@ void data_node(int node_id) {
   int data_start = result_size - subset_size;
   int data_size = subset_size;
   recv_init_subset(&data[data_start], subset_size);
-  log_msg(LOG__INFO,"Received subset of size %i.", subset_size);
 
   // perform
   log_msg(LOG_DEBUG, "Starting inital FFT calculation.");
@@ -83,12 +82,12 @@ void data_node(int node_id) {
       data_start -= data_size;
       memcpy(&data[data_start], match, sizeof(double complex) * data_size);
       data_size *= 2;
+      log_msg(LOG_DEBUG, "Starting FFT pass of size %i.", data_size);
       fft_pass(&data[data_start], data_size, data_size);
+      log_msg(LOG_DEBUG, "FFT pass finished.");
     }
   }
   fft_buffer_free(&buf);
 
-  printf("Node %i sending result of size %i to node %i.\n", node_id,
-         result_size, result_dest);
   send_results(data, result_size, result_dest);
 }

@@ -1,7 +1,7 @@
 #  Copyright (c) 2023 Zachary Todd Edwards
 #  MIT License
 
-#To use clang: add -cc=clang-15 to CC and remove -fcx-limited-range from CFLAGS
+#To use clang: add -cc=clang to CC and remove -fcx-limited-range from CFLAGS
 CC = mpicc 
 CFLAGS = -Wall -I$(HEDDIR) -fcx-limited-range
 
@@ -14,7 +14,7 @@ EXEC = breakwater
 
 LIBS = -lm
 
-_DEPS = fft.h logging.h messaging.h node.h 
+_DEPS = bitmanip.h fft.h logging.h messaging.h node.h 
 DEPS = $(patsubst %,$(HEDDIR)/%,$(_DEPS))
 
 _OBJ = main.o fft.o logging.o messaging.o node.o

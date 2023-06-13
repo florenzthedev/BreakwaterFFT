@@ -10,8 +10,8 @@ static char loglevel = LOG_NONE;
 static int lognode = -1;
 static FILE *logger;
 
-const char *log_level_name[] = {"FATAL", "ERROR", "WARNING",
-                                "INFO",  "DEBUG", "TRACE"};
+const char *log_level_name[] = {"FATAL  ", "ERROR  ", "WARNING",
+                                "INFO   ",  "DEBUG  ", "TRACE  "};
 
 void init_log(int node_id, char loglvl) {
   lognode = node_id;

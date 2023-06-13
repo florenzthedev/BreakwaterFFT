@@ -91,4 +91,10 @@ int recv_result_set(double complex *data, int max);
  */
 void msg_finalize();
 
+/**
+ * @brief
+ *
+ */
+void msg_abort();
+
 #endif  // MESSAGING_H_INCLUDED
