@@ -25,19 +25,16 @@ void process_options(int argc, char *argv[], struct breakwater_options *bopts,
   while ((carg = getopt(argc, argv, "hl:d")) != -1) {
     switch (carg) {
       case 'h':
-        if (node_id == 0) {
-          print_help();
-          msg_finalize();
-          exit(EXIT_SUCCESS);
-        } else {
-          msg_finalize();
-          exit(EXIT_SUCCESS);
-        }
+        if (node_id == 0) print_help();
+        msg_finalize();
+        exit(EXIT_SUCCESS);
 
       case 'l':
         temp = strtol(optarg, NULL, 10);
         if (temp == 0 && optarg[0] != '0') {
-          fprintf(stderr, "Error: invalid loglevel: %s\n", optarg);
+          if (node_id == 0)
+            fprintf(stderr, "Error: invalid loglevel: %s\n", optarg);
+          msg_finalize();
           exit(EXIT_FAILURE);
         }
         bopts->loglvl = temp;
