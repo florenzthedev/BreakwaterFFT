@@ -9,6 +9,7 @@
 #include "logging.h"
 #include "messaging.h"
 #include "node.h"
+#include "options.h"
 
 int main(int argc, char* argv[]) {
   int node_id;

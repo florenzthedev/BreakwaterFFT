@@ -69,6 +69,7 @@ void data_node(int node_id) {
   log_msg(LOG_DEBUG, "Finished inital FFT calculation.");
 
   // TODO More clever use of flow control could reduce redundant operations
+  log_msg(LOG_DEBUG, "Allocating FFT buffer.");
   fft_buffer buf = fft_buffer_init();
   while (data_size < result_size) {
     // The upper bounds on size should actually be this / 2, the extra space
@@ -76,6 +77,7 @@ void data_node(int node_id) {
     double complex temp[result_size];
     int size_received = recv_result_set(temp, result_size);
 
+    log_msg(LOG_DEBUG, "Adding entry to FFT buffer.");
     fft_buffer_add(buf, temp, size_received);
     double complex* match;
     while ((match = fft_buffer_search(buf, data_size)) != NULL) {

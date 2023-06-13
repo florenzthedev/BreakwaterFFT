@@ -14,10 +14,10 @@ EXEC = breakwater
 
 LIBS = -lm
 
-_DEPS = bitmanip.h fft.h logging.h messaging.h node.h 
+_DEPS = bitmanip.h fft.h logging.h messaging.h node.h options.h
 DEPS = $(patsubst %,$(HEDDIR)/%,$(_DEPS))
 
-_OBJ = main.o fft.o logging.o messaging.o node.o
+_OBJ =  fft.o logging.o main.o messaging.o node.o options.o
 OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
 
 $(EXEC): $(OBJ)
