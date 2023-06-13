@@ -11,13 +11,13 @@
 #include "logging.h"
 #include "messaging.h"
 
-void head_node(const char* filename) {
+void head_node(const char* filename, bool header) {
   int nodes = get_node_count();
   nodes--;  // Not counting node 0, us!
 
   log_msg(LOG__INFO, "Reading input dataset.");
   int input_size = 0;
-  double complex* data = csv2cmplx(filename, &input_size);
+  double complex* data = csv2cmplx(filename, header, &input_size);
   if (data == NULL) {
     log_msg(LOG_FATAL, "Unable to read input file: %s", filename);
     msg_abort();

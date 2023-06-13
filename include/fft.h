@@ -15,6 +15,7 @@
 #ifndef FFT_H_INCLUDED
 #define FFT_H_INCLUDED
 #include <complex.h>
+#include <stdbool.h>
 
 /**
  * @brief Prints out an array of complex numbers. Numbers are printed in a way
@@ -37,7 +38,7 @@ void print_complex(double complex *x, int N);
  *
  * @return A pointer to a dynamically allocated array of complex numbers.
  */
-double complex *csv2cmplx(const char *filename, int *N);
+double complex *csv2cmplx(const char *filename, bool header, int *N);
 
 /**
  * @brief Calculates fair power of two partitioning for N values across nodes

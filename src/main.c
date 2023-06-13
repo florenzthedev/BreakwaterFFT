@@ -12,11 +12,12 @@
 #include "options.h"
 
 int main(int argc, char* argv[]) {
-  int node_id;
+  int node_id = msg_init(&argc, &argv);
 
-  node_id = msg_init(&argc, &argv);
+  struct breakwater_options bopts;
+  process_options(argc, argv, &bopts, node_id);
 
-  init_log(node_id, LOG__ALL);
+  init_log(node_id, bopts.loglvl);
 
 #ifdef _DEBUG
   printf("Node %i waiting 10 seconds for debugger attachment.\n", node_id);
@@ -26,7 +27,7 @@ int main(int argc, char* argv[]) {
   log_msg(LOG__INFO, "Starting...");
 
   if (node_id == 0)
-    head_node(argv[1]);
+    head_node(bopts.infilename, bopts.header);
   else
     data_node(node_id);
 

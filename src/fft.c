@@ -35,12 +35,12 @@ void fft(double complex X[], int N) {
   for (int j = 2; j <= N; j *= 2) fft_pass(X, N, j);
 }
 
-double complex *csv2cmplx(const char *filename, int *N) {
+double complex *csv2cmplx(const char *filename, bool header, int *N) {
   FILE *fp = fopen(filename, "r");
   if (fp == NULL) {
     return NULL;
   }
-
+  if (header) fscanf(fp, "%*[^\n]\n");
   double complex *x = malloc(sizeof(double complex) * INIT_BLOCK_SIZE);
   assert(x != NULL);
   double temp_real, temp_imag;

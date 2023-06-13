@@ -4,12 +4,14 @@
 #ifndef NODE_H_INCLUDED
 #define NODE_H_INCLUDED
 
+#include <stdbool.h>
+
 /**
  * @brief
  *
  * @param filename
  */
-void head_node(const char* filename);
+void head_node(const char* filename, bool header);
 
 /**
  * @brief

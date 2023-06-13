@@ -6,12 +6,12 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-static char loglevel = LOG_NONE;
-static int lognode = -1;
-static FILE *logger;
+char loglevel = LOG_NONE;
+int lognode = -1;
+FILE *logger;
 
-const char *log_level_name[] = {"FATAL  ", "ERROR  ", "WARNING",
-                                "INFO   ",  "DEBUG  ", "TRACE  "};
+char *log_level_name[] = {"FATAL  ", "ERROR  ", "WARNING",
+                          "INFO   ", "DEBUG  ", "TRACE  "};
 
 void init_log(int node_id, char loglvl) {
   lognode = node_id;
@@ -19,13 +19,9 @@ void init_log(int node_id, char loglvl) {
   logger = stderr;
 }
 
-void init_log_file(int node_id, char loglvl, FILE *logfile) {
-  lognode = node_id;
-  loglevel = loglvl;
-  logger = logfile;
-}
-
+#ifndef __GNUC__
 void log_msg(int level, const char *fmt, ...) {
+  // TODO Explore macro options to make this faster
   if (level > loglevel) return;
   va_list args;
   va_start(args, fmt);
@@ -34,3 +30,4 @@ void log_msg(int level, const char *fmt, ...) {
   putc('\n', logger);
   va_end(args);
 }
+#endif  // __GNUC__
