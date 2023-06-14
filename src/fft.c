@@ -2,6 +2,7 @@
 //  MIT License
 
 #define INIT_BLOCK_SIZE 4
+#define MAX_LINE_SIZE 1024
 #define M_TAU 6.28318530717958647692
 
 #include "fft.h"
@@ -40,13 +41,18 @@ double complex *csv2cmplx(const char *filename, bool header, int *N) {
   if (fp == NULL) {
     return NULL;
   }
-  if (header) fscanf(fp, "%*[^\n]\n");
+  if (header) fscanf(fp, "%*[^\n]\n"); //Ignore first line
   double complex *x = malloc(sizeof(double complex) * INIT_BLOCK_SIZE);
   assert(x != NULL);
   double temp_real, temp_imag;
   int allocated = INIT_BLOCK_SIZE;
   (*N) = 0;
-  while (fscanf(fp, "%lf,%lf", &temp_real, &temp_imag) > 0) {
+
+  // using fgets means we get the whole line, this is useful if excel wants to
+  // add extra commas to our file
+  char line[MAX_LINE_SIZE];
+  while (fgets(line, MAX_LINE_SIZE, fp)) {
+    sscanf(line, "%lf,%lf", &temp_real, &temp_imag);
     if ((*N) == allocated) {
       x = realloc(x, (allocated *= 2) * sizeof(double complex));
       assert(x != NULL);
@@ -59,6 +65,44 @@ double complex *csv2cmplx(const char *filename, bool header, int *N) {
   while ((*N) < allocated) x[(*N)++] = 0;
 
   return x;
+}
+
+// Basic implementation of heapsort.
+// Given that most of the values will be the same it should not ever take the
+// full time, but I was unable to prove the allocation algorithm would never
+// produce more than X number of unique values so wanted to avoid counting sort.
+
+// Heap calculations for 0-indexed heap
+#define parent(x) ((x - 1) / 2)
+#define lchild(x) (2 * x + 1)
+#define rchild(x) (2 * x + 2)
+
+int temp;
+#define swap_i(x, y) \
+  temp = x;          \
+  x = y;             \
+  y = temp;
+
+void bubble_down(int list[], int index, int N) {
+  int hi = index;
+  for (;;) {
+    if (lchild(index) < N && list[lchild(index)] > list[hi]) hi = lchild(index);
+    if (rchild(index) < N && list[rchild(index)] > list[hi]) hi = rchild(index);
+    if (hi != index) {
+      swap_i(list[hi], list[index]);
+      index = hi;
+    } else
+      break;
+  }
+}
+
+void heapsort(int list[], int N) {
+  for (int i = N / 2; i >= 0; i--) bubble_down(list, i, N);
+  while (N > 1) {
+    N--;
+    swap_i(list[0], list[N]);
+    bubble_down(list, 0, N);
+  }
 }
 
 void partition_pow2(int N, int parts[], int nodes) {

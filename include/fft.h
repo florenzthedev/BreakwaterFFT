@@ -8,7 +8,9 @@
  * require several small pre-allocated arrays, these are intended to be used
  * with C99 variable length arrays (VLAs). If you are using this library from
  * C++ using the internal array of a pre-sized vector would be a reasonable
- * substitute.
+ * substitute. These functions deliberately do not contain any logging, logging
+ * must be done externally. This is to keep this functions as isolated,
+ * performant, and portable as possible.
  *
  */
 
@@ -34,6 +36,7 @@ void print_complex(double complex *x, int N);
  * controlled by a constant INIT_BLOCK_SIZE.
  *
  * @param filename The name of the file to attempt to open.
+ * @param header If true the first line of the file will be ignored.
  * @param N The integer to store the size of the complex number array.
  *
  * @return A pointer to a dynamically allocated array of complex numbers.

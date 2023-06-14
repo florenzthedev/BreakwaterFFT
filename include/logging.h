@@ -31,35 +31,18 @@ extern char *log_level_name[];
  */
 void init_log(int node_id, char loglvl);
 
-#ifndef __GNUC__
 /**
  * @brief Adds a log message. Will always start the message with "%s Node %i: "
  * where %s is the name of the log level and %i is the ID number registered with
  * log_init. If either of those have not yet been called no message will be
  * created. Will add a newline to the end of the message, will not add a period.
  *
- * Standard C fallback function implementation.
- *
- * @param level Level of log message.
- * @param fmt Formatted string with message.
- * @param ... Additional variables for the message.
- */
-void log_msg(int level, const char *fmt, ...);
-#else  // __GNUC__
-/**
- * @brief Adds a log message. Will always start the message with "%s Node %i: "
- * where %s is the name of the log level and %i is the ID number registered with
- * log_init. If either of those have not yet been called no message will be
- * created. Will add a newline to the end of the message, will not add a period.
- *
- * Macro implementation, depends on GNU C extensions. Higher performance and
- * less lines get broken on multithreaded machines.
+ * Macro implementation, depends on C23 features.
  *
  */
 #define log_msg(level, fmt, ...)                                        \
   if (level <= loglevel)                                                \
     fprintf(logger, "%s Node %i: " fmt "\n", log_level_name[level - 1], \
-            lognode, ##__VA_ARGS__);
-#endif  //__GNUC__
+            lognode __VA_OPT__(, ) __VA_ARGS__);
 
 #endif  // LOGGING_H_INCLUDED
