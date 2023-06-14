@@ -62,7 +62,7 @@ double complex *csv2cmplx(const char *filename, bool header, int *N) {
 }
 
 // Basic implementation of heapsort.
-// Given that most of the values should be the same it should not ever take the
+// Given that most of the values will be the same it should not ever take the
 // full time, but I was unable to prove the allocation algorithm would never
 // produce more than X number of unique values so wanted to avoid counting sort.
 

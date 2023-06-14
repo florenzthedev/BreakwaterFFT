@@ -28,6 +28,6 @@ unsigned int bit_reverse(unsigned int x, unsigned int n) {
   }
   return r;
 }
-#endif // __clang__ or x86_64
+#endif // __clang__
 
 #endif  // BITMANIP_H_INCLUDED
