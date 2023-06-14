@@ -67,44 +67,6 @@ double complex *csv2cmplx(const char *filename, bool header, int *N) {
   return x;
 }
 
-// Basic implementation of heapsort.
-// Given that most of the values will be the same it should not ever take the
-// full time, but I was unable to prove the allocation algorithm would never
-// produce more than X number of unique values so wanted to avoid counting sort.
-
-// Heap calculations for 0-indexed heap
-#define parent(x) ((x - 1) / 2)
-#define lchild(x) (2 * x + 1)
-#define rchild(x) (2 * x + 2)
-
-int temp;
-#define swap_i(x, y) \
-  temp = x;          \
-  x = y;             \
-  y = temp;
-
-void bubble_down(int list[], int index, int N) {
-  int hi = index;
-  for (;;) {
-    if (lchild(index) < N && list[lchild(index)] > list[hi]) hi = lchild(index);
-    if (rchild(index) < N && list[rchild(index)] > list[hi]) hi = rchild(index);
-    if (hi != index) {
-      swap_i(list[hi], list[index]);
-      index = hi;
-    } else
-      break;
-  }
-}
-
-void heapsort(int list[], int N) {
-  for (int i = N / 2; i >= 0; i--) bubble_down(list, i, N);
-  while (N > 1) {
-    N--;
-    swap_i(list[0], list[N]);
-    bubble_down(list, 0, N);
-  }
-}
-
 void partition_pow2(int N, int parts[], int nodes) {
   assert((N & (N - 1)) == 0);                  // Must be a power of two
   memset(parts, 0, nodes * sizeof(int));       // zero out array
