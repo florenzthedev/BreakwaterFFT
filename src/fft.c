@@ -2,6 +2,7 @@
 //  MIT License
 
 #define INIT_BLOCK_SIZE 4
+#define MAX_LINE_SIZE 1024
 #define M_TAU 6.28318530717958647692
 
 #include "fft.h"
@@ -46,7 +47,12 @@ double complex *csv2cmplx(const char *filename, bool header, int *N) {
   double temp_real, temp_imag;
   int allocated = INIT_BLOCK_SIZE;
   (*N) = 0;
-  while (fscanf(fp, "%lf,%lf", &temp_real, &temp_imag) > 0) {
+
+  // using fgets means we get the whole line, this is useful if excel wants to
+  // add extra commas to our file
+  char line[MAX_LINE_SIZE];
+  while (fgets(line, MAX_LINE_SIZE, fp)) {
+    sscanf(line, "%lf,%lf", &temp_real, &temp_imag);
     if ((*N) == allocated) {
       x = realloc(x, (allocated *= 2) * sizeof(double complex));
       assert(x != NULL);
