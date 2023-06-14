@@ -41,7 +41,7 @@ double complex *csv2cmplx(const char *filename, bool header, int *N) {
   if (fp == NULL) {
     return NULL;
   }
-  if (header) fscanf(fp, "%*[^\n]\n");
+  if (header) fscanf(fp, "%*[^\n]\n"); //Ignore first line
   double complex *x = malloc(sizeof(double complex) * INIT_BLOCK_SIZE);
   assert(x != NULL);
   double temp_real, temp_imag;

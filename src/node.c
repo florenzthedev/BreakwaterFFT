@@ -48,7 +48,7 @@ void head_node(const char* filename, bool header) {
   free(data);
 }
 
-void data_node(int node_id) {
+void data_node() {
   int subset_size, result_size, result_dest;
 
   recv_header(&subset_size, &result_size, &result_dest);
