@@ -42,7 +42,7 @@ double complex *csv2cmplx(const char *filename, bool header, int *N);
 
 /**
  * @brief Calculates fair power of two partitioning for N values across nodes
- * nodes.
+ * nodes. I think this algorithm is O(1) too! 
  *
  * @param N Total number of values to be operated on, must be a power of two.
  * @param parts Preallocated array of ints that the resulting partition will be

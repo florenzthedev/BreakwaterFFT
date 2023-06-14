@@ -61,68 +61,21 @@ double complex *csv2cmplx(const char *filename, bool header, int *N) {
   return x;
 }
 
-// Basic implementation of heapsort.
-// Given that most of the values should be the same it should not ever take the
-// full time, but I was unable to prove the allocation algorithm would never
-// produce more than X number of unique values so wanted to avoid counting sort.
-
-// Heap calculations for 0-indexed heap
-#define parent(x) ((x - 1) / 2)
-#define lchild(x) (2 * x + 1)
-#define rchild(x) (2 * x + 2)
-
-int temp;
-#define swap_i(x, y) \
-  temp = x;          \
-  x = y;             \
-  y = temp;
-
-void bubble_down(int list[], int index, int N) {
-  int hi = index;
-  for (;;) {
-    if (lchild(index) < N && list[lchild(index)] > list[hi]) hi = lchild(index);
-    if (rchild(index) < N && list[rchild(index)] > list[hi]) hi = rchild(index);
-    if (hi != index) {
-      swap_i(list[hi], list[index]);
-      index = hi;
-    } else
-      break;
-  }
-}
-
-void heapsort(int list[], int N) {
-  for (int i = N / 2; i >= 0; i--) bubble_down(list, i, N);
-  while (N > 1) {
-    N--;
-    swap_i(list[0], list[N]);
-    bubble_down(list, 0, N);
-  }
-}
-
 void partition_pow2(int N, int parts[], int nodes) {
-  assert((N & (N - 1)) == 0);  // Must be a power of two
-  parts[0] = N;
-
-  // treat the allocations like a heap
-  // Pretty sure this is an O(nlogn) algorithm
-  for (int i = 1; i < nodes; i++) {
-    int hi = parent(i);
-
-    // while the parent of our highest known parent is greater
-    while (parts[hi] <= parts[parent(hi)] && hi != 0) hi = parent(hi);
-
-    // two is the smallest segment we can work with
-    if (parts[hi] < 4) {
-      parts[i] = 0;
-      continue;
-    }
-
-    // Half taken from the highest parent for the current node
-    parts[hi] = parts[i] = parts[hi] / 2;
+  assert((N & (N - 1)) == 0);                  // Must be a power of two
+  memset(parts, 0, nodes * sizeof(int));       // zero out array
+  int balance = 1 << (bit_length(nodes) - 1);  // pow(2,floor(log2(nodes)))
+  if (balance >= (N / 2)) {                    // Everyone gets 2 or 0
+    for (int i = 0; i < N / 2; i++) parts[nodes - 1 - i] = 2;
+    return;
   }
-
-  // Get these block sizes in order!
-  heapsort(parts, nodes);
+  int portion_a = N / balance;       // Only ever need two values
+  int portion_b = portion_a / 2;     // a & b
+  int difference = nodes - balance;  // num above a power of two
+  // int count_a = balance - difference;  // num of nodes with higher value
+  int count_b = 2 * difference;  // num of nodes with lower value
+  for (int i = 0; i < count_b; i++) parts[i] = portion_b;
+  for (int i = count_b; i < nodes; i++) parts[i] = portion_a;
 }
 
 void result_targets(int result_size[], int result_dest[], int parts[],
