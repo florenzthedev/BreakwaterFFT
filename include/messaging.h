@@ -87,7 +87,7 @@ int recv_init_subset(double complex *data, int max);
 void send_results(double complex *data, int size, int dest);
 
 /**
- * @brief Recieves a result set from another node. There are no guarantees about
+ * @brief Receives a result set from another node. There are no guarantees about
  * what order resulting sets will come in.
  *
  * @param data Pointer to buffer for holding the incoming data.

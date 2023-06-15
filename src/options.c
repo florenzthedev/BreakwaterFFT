@@ -9,7 +9,18 @@
 
 #include "messaging.h"
 
-void print_help() {}
+void print_help(const char *invocation) {
+  printf(
+      "Usage %s [OPTIONS] [FILE]\n"
+      "\n"
+      "Options:\n"
+      "-h\tDisplay this help message and exit\n"
+      "-l #\tSet loglevel to #, between 0 (none) and 6 (all), default is 4\n"
+      "-d\tIgnore the first line or header of [FILE]\n"
+      "-i\tCalculate the inverse FFT\n"
+      "-f\tCalculate the forward FFT (default)\n"
+      "\n", invocation);
+}
 
 void default_options(struct breakwater_options *bopts) {
   bopts->loglvl = 4;
@@ -26,7 +37,7 @@ void process_options(int argc, char *argv[], struct breakwater_options *bopts,
   while ((carg = getopt(argc, argv, "hl:dif")) != -1) {
     switch (carg) {
       case 'h':
-        if (node_id == 0) print_help();
+        if (node_id == 0) print_help(argv[0]);
         msg_finalize();
         exit(EXIT_SUCCESS);
 

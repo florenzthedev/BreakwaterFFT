@@ -17,8 +17,10 @@ void head_node(const char* filename, bool header);
 
 /**
  * @brief This function contains the routines to be ran by all other nodes.
- * These nodes will be send all of the information they need from the head node.
+ * These nodes will be sent all of the information they need from the head node.
  *
+ *  @param inverse If true perform the inverse FFT operation, otherwise the
+ * forward FFT is used.
  */
 void data_node(bool inverse);
 
