@@ -19,29 +19,58 @@ void print_complex(double complex *x, int N) {
   for (int i = 0; i < N; i++) printf("%f,%f\n", creal(x[i]), cimag(x[i]));
 }
 
-void fft_butterfly(double complex X[], int n, double complex omega) {
+
+
+static double complex (*rou_func)(int, int) = &forward_rou_cexp; 
+static double complex *roots_of_unity_lut;
+static int roots_of_unity_root;
+
+//TODO Look into using negation and conjugates to get this down to 1/4 the size
+void roots_of_unity_lut_gen(int nth, bool inverse) {
+  assert((nth & (nth - 1)) == 0);
+  roots_of_unity_root = nth;
+  roots_of_unity_lut = malloc(sizeof(double complex) * nth);
+  double complex omega = cexp(((inverse ? 1 : -1) * I * M_TAU) / nth);
+  roots_of_unity_lut[0] = 1;
+  roots_of_unity_lut[1] = omega;
+  for (int i = 2; i < nth; i++)
+    roots_of_unity_lut[i] = roots_of_unity_lut[i - 1] * omega;
+}
+
+double complex rou_lookup(int kth, int nth) {
+  kth *= nth / roots_of_unity_root;
+  return roots_of_unity_lut[kth];
+}
+
+double complex forward_rou_cexp(int kth, int nth) {
+  return cexp(-(I * M_TAU * kth) / nth);
+}
+
+double complex inverse_rou_cexp(int kth, int nth) {
+  return cexp((I * M_TAU * kth) / nth);
+}
+
+void fft(double complex X[], int N) {
+  for (int j = 2; j <= N; j *= 2)
+    for (int k = 0; k < N; k += j)
+      fft_butterfly(&X[k], j);
+}
+
+void fft_butterfly(double complex X[], int n) {
   for (int j = 0; j < n / 2; j++) {
-    double complex product = cpow(omega, j) * X[j + n / 2];
+    double complex product = (*rou_func)(j, n) * X[j + n / 2];
     X[j + n / 2] = X[j] - product;
     X[j] = X[j] + product;
   }
 }
 
-void fft_pass(double complex X[], int N, int n) {
-  double complex omega = cexp(-((I * M_TAU) / n));
-  for (int j = 0; j < N; j += n) fft_butterfly(&X[j], n, omega);
-}
-
-void fft(double complex X[], int N) {
-  for (int j = 2; j <= N; j *= 2) fft_pass(X, N, j);
-}
 
 double complex *csv2cmplx(const char *filename, bool header, int *N) {
   FILE *fp = fopen(filename, "r");
   if (fp == NULL) {
     return NULL;
   }
-  if (header) fscanf(fp, "%*[^\n]\n"); //Ignore first line
+  if (header) fscanf(fp, "%*[^\n]\n");  // Ignore first line
   double complex *x = malloc(sizeof(double complex) * INIT_BLOCK_SIZE);
   assert(x != NULL);
   double temp_real, temp_imag;

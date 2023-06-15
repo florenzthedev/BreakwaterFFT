@@ -85,7 +85,7 @@ void data_node() {
       memcpy(&data[data_start], match, sizeof(double complex) * data_size);
       data_size *= 2;
       log_msg(LOG_DEBUG, "Starting FFT pass of size %i.", data_size);
-      fft_pass(&data[data_start], data_size, data_size);
+      fft_butterfly(&data[data_start], data_size);
       log_msg(LOG_DEBUG, "FFT pass finished.");
     }
   }

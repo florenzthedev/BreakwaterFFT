@@ -8,10 +8,12 @@
 #include <stddef.h>
 
 struct breakwater_options {
+  char *infilename;
   int loglvl;
   int style;
-  char *infilename;
   bool header;
+  bool inverse;
+  bool use_lut;
 };
 
 /**
