@@ -13,11 +13,11 @@ To build just run `make`, the executable will be named `breakwater` and placed i
 To run use `mpirun [MPI Options] breakwater [Options] [File]`. 
 
 The options for breakwater are:\
--h      Display help message and exit\
--l #    Set loglevel to #, between 0 (none) and 6 (all), default is 4\
--d      Ignore the first line or header of [FILE]\
--i      Calculate the inverse FFT\
--f      Calculate the forward FFT (default)
+`-h`      Display help message and exit\
+`-l` #    Set loglevel to #, between 0 (none) and 6 (all), default is 4\
+`-d`      Ignore the first line or header of [FILE]\
+`-i`      Calculate the inverse FFT\
+`-f`      Calculate the forward FFT (default)
 
 The file is expected to have one complex number on each line, with the real and imaginary parts separated by a comma (eg. "1.23,4.56") and in the first two columns respectively. The input will be padded with 0s to reach a power of two in size.
 
@@ -40,9 +40,10 @@ Otherwise $P = k - d = m - Q$, $p = n \div k$, $Q = 2d$, and $q = p \div 2$.
 Let $R$ be the set of expected result sizes from all $m$ nodes, initialized to the sizes of the initial subset assigned to each node.\
 Let $D$ be the set of destination nodes for each node and $D_m = 0$.\
 Let $q$ be the size of the smallest subset greater than zero assigned to any node.\
-1: For each element $r_a$ of value $q$ in $R$ find the next element in $R$, $r_b$, that also equals $q$ and set $r_b = r_b + r_a$, and $D_a = b$.\
-2: Set $q = 2q$\
-Repeat 1 & 2 until $q > R_m$
+While $q \le R_m$:
+- For each element $r_a$ of value $q$ in $R$ find the next element in $R$, $r_b$, that also equals $q$ and set $r_b = r_b + r_a$, and $D_a = b$.
+- Set $q = 2q$.
+
 
 ### Bit-Reversal Permutation Algorithm
 Let $n$ be a natural power of two representing the number of elements in our input set $x$.\
