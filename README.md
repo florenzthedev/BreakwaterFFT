@@ -59,8 +59,10 @@ Let $n$ be the size of our input set $x$, where $x$ is expected to be in bit-rev
 For each power of two $m$ from 2 to $n$:
 - For each subset of $x$, $y$, of size $m$:
   - For the first $m \over 2$ elements in $y$:
-    - $y_a = y_a + e^{-ai\tau\over m} \cdot y_{a+{m \over 2}}$
-    - $y_{a+{m \over 2}} = y_a - e^{-ai\tau\over m} \cdot y_{a+{m \over 2}}$
+    - $y_a = y_a + e^-{ai\tau\over m} \cdot y_{a+{m \over 2}}$
+    - $y_{a+{m \over 2}} = y_a - e^-{ai\tau\over m} \cdot y_{a+{m \over 2}}$
+
+The inverse FFT is the same but the exponent is not negated.
 
 The only notable quality of how it is implemented in this program is that the butterfly operation, the innermost loop, is a standalone function that is called to consolidate result sets from multiple nodes.
 
