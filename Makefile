@@ -39,9 +39,13 @@ debug: clean $(EXEC)
 
 test: $(EXEC)
 	@echo ----  TEST 1  ----
-	mpiexec -n 4 ./$(EXEC) $(TSTDIR)/test1.csv
+	mpiexec -n 4 ./$(EXEC) -l 5 $(TSTDIR)/test1.csv
 	@echo ----  TEST 2  ----
-	mpiexec -n 4 ./$(EXEC) $(TSTDIR)/test2.csv
+	mpiexec -n 6 ./$(EXEC) -l 0 $(TSTDIR)/test2.csv
+	@echo ----  TEST 3  ----
+	mpiexec -n 3 ./$(EXEC) -i -l 5 $(TSTDIR)/test3.csv
+	@echo ----  TEST 4  ----
+	mpiexec -n 5 ./$(EXEC) -i -l 0 $(TSTDIR)/test4.csv
 
 clean:
 	rm -f $(OBJDIR)/*.o core

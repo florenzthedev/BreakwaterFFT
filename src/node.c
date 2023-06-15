@@ -11,7 +11,7 @@
 #include "logging.h"
 #include "messaging.h"
 
-void head_node(const char* filename, bool header) {
+void head_node(const char* filename, bool header, bool inverse) {
   int nodes = get_node_count();
   nodes--;  // Not counting node 0, us!
 
@@ -42,6 +42,9 @@ void head_node(const char* filename, bool header) {
   send_init_subsets(data, parts, nodes);
 
   recv_result_set(data, input_size);
+
+  //1/N factor for inverse FFT
+  if(inverse) for(int j = 0; j < input_size; j++) data[j] /= input_size;
 
   print_complex(data, input_size);
 

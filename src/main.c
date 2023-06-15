@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
   log_msg(LOG__INFO, "Starting...");
 
   if (node_id == 0)
-    head_node(bopts.infilename, bopts.header);
+    head_node(bopts.infilename, bopts.header, bopts.inverse);
   else
     data_node(bopts.inverse);
 

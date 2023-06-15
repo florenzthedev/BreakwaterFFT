@@ -12,8 +12,10 @@
  *
  * @param filename The name of the input file.
  * @param header If true the first line of the input file will be ignored.
+ * @param inverse If true perform the inverse FFT operation, otherwise the
+ * forward FFT is used.
  */
-void head_node(const char* filename, bool header);
+void head_node(const char* filename, bool header, bool inverse);
 
 /**
  * @brief This function contains the routines to be ran by all other nodes.
