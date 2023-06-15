@@ -19,51 +19,46 @@ void print_complex(double complex *x, int N) {
   for (int i = 0; i < N; i++) printf("%f,%f\n", creal(x[i]), cimag(x[i]));
 }
 
-
-
-static double complex (*rou_func)(int, int) = &forward_rou_cexp; 
-static double complex *roots_of_unity_lut;
-static int roots_of_unity_root;
-
-//TODO Look into using negation and conjugates to get this down to 1/4 the size
-void roots_of_unity_lut_gen(int nth, bool inverse) {
-  assert((nth & (nth - 1)) == 0);
-  roots_of_unity_root = nth;
-  roots_of_unity_lut = malloc(sizeof(double complex) * nth);
-  double complex omega = cexp(((inverse ? 1 : -1) * I * M_TAU) / nth);
-  roots_of_unity_lut[0] = 1;
-  roots_of_unity_lut[1] = omega;
-  for (int i = 2; i < nth; i++)
-    roots_of_unity_lut[i] = roots_of_unity_lut[i - 1] * omega;
-}
-
-double complex rou_lookup(int kth, int nth) {
-  kth *= nth / roots_of_unity_root;
-  return roots_of_unity_lut[kth];
-}
-
-double complex forward_rou_cexp(int kth, int nth) {
-  return cexp(-(I * M_TAU * kth) / nth);
-}
-
-double complex inverse_rou_cexp(int kth, int nth) {
-  return cexp((I * M_TAU * kth) / nth);
-}
-
-void fft(double complex X[], int N) {
-  for (int j = 2; j <= N; j *= 2)
-    for (int k = 0; k < N; k += j)
-      fft_butterfly(&X[k], j);
-}
-
-void fft_butterfly(double complex X[], int n) {
+// These four functions are written out explicitly for maximum performance!
+void forward_fft_butterfly(double complex X[], int n) {
   for (int j = 0; j < n / 2; j++) {
-    double complex product = (*rou_func)(j, n) * X[j + n / 2];
+    double complex product = cexp(-(I * M_TAU * j) / n) * X[j + n / 2];
     X[j + n / 2] = X[j] - product;
     X[j] = X[j] + product;
   }
 }
 
+void forward_fft(double complex X[], int N) {
+  for (int j = 2; j <= N; j *= 2)
+    for (int k = 0; k < N; k += j) forward_fft_butterfly(&X[k], j);
+}
+
+void inverse_fft_butterfly(double complex X[], int n) {
+  for (int j = 0; j < n / 2; j++) {
+    double complex product = cexp((I * M_TAU * j) / n) * X[j + n / 2];
+    X[j + n / 2] = X[j] - product;
+    X[j] = X[j] + product;
+  }
+}
+
+void inverse_fft(double complex X[], int N) {
+  for (int j = 2; j <= N; j *= 2)
+    for (int k = 0; k < N; k += j) inverse_fft_butterfly(&X[k], j);
+}
+
+void fft(double complex X[], int n, bool inverse) {
+  if (inverse)
+    inverse_fft(X, n);
+  else
+    forward_fft(X, n);
+}
+
+void fft_butterfly(double complex X[], int n, bool inverse) {
+  if (inverse)
+    inverse_fft_butterfly(X, n);
+  else
+    forward_fft_butterfly(X, n);
+}
 
 double complex *csv2cmplx(const char *filename, bool header, int *N) {
   FILE *fp = fopen(filename, "r");

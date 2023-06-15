@@ -17,14 +17,13 @@ void default_options(struct breakwater_options *bopts) {
   bopts->infilename = NULL;
   bopts->header = false;
   bopts->inverse = false;
-  bopts->use_lut = true;
 }
 
 void process_options(int argc, char *argv[], struct breakwater_options *bopts,
                      int node_id) {
   int temp = 0, carg;
   default_options(bopts);
-  while ((carg = getopt(argc, argv, "hl:diftc")) != -1) {
+  while ((carg = getopt(argc, argv, "hl:dif")) != -1) {
     switch (carg) {
       case 'h':
         if (node_id == 0) print_help();
@@ -52,14 +51,6 @@ void process_options(int argc, char *argv[], struct breakwater_options *bopts,
 
       case 'f':
         bopts->inverse = false;
-        break;
-
-      case 't':
-        bopts->use_lut = true;
-        break;
-
-      case 'c':
-        bopts->use_lut = false;
         break;
 
       case '?':

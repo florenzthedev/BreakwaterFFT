@@ -82,20 +82,17 @@ void result_targets(int result_size[], int result_dest[], int parts[],
  */
 void bit_reversal_permutation(double complex *x, int N);
 
-double complex rou_lookup(int kth, int nth);
-double complex forward_rou_cexp(int kth, int nth);
-double complex inverse_rou_cexp(int kth, int nth);
-
 /**
  * @brief A single FFT butterfly operation, used internally by fft(). Also used
  * to consolidate received sets of FFT results.
  *
  * @param X Dataset to perform butterfly operation on, will be overwritten and
  * must be a power of two in size.
- * @param n
- * @param omega
+ * @param n The size of the butterfly operation/input set.
+ * @param inverse If true perform the inverse FFT operation, otherwise the
+ * forward FFT is used.
  */
-void fft_butterfly(double complex X[], int n);
+void fft_butterfly(double complex X[], int n, bool inverse);
 
 /**
  * @brief The Fast-Fourier Transform algorithm, computes the Fourier transform
@@ -105,8 +102,10 @@ void fft_butterfly(double complex X[], int n);
  * @param X The input set of complex numbers, must be a power of two in size,
  * and will be overwritten by the results.
  * @param n The size of the input set.
+ * @param inverse If true perform the inverse FFT operation, otherwise the
+ * forward FFT is used.
  */
-void fft(double complex X[], int n);
+void fft(double complex X[], int n, bool inverse);
 
 /**
  * @brief Linked-list used for storing FFT-chunks received out-of-order. Members

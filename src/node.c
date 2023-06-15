@@ -48,7 +48,7 @@ void head_node(const char* filename, bool header) {
   free(data);
 }
 
-void data_node() {
+void data_node(bool inverse) {
   int subset_size, result_size, result_dest;
 
   recv_header(&subset_size, &result_size, &result_dest);
@@ -65,7 +65,7 @@ void data_node() {
 
   // perform
   log_msg(LOG_DEBUG, "Starting inital FFT calculation.");
-  fft(&data[data_start], subset_size);
+  fft(&data[data_start], subset_size, inverse);
   log_msg(LOG_DEBUG, "Finished inital FFT calculation.");
 
   // TODO More clever use of flow control could reduce redundant operations
@@ -85,7 +85,7 @@ void data_node() {
       memcpy(&data[data_start], match, sizeof(double complex) * data_size);
       data_size *= 2;
       log_msg(LOG_DEBUG, "Starting FFT pass of size %i.", data_size);
-      fft_butterfly(&data[data_start], data_size);
+      fft_butterfly(&data[data_start], data_size, inverse);
       log_msg(LOG_DEBUG, "FFT pass finished.");
     }
   }

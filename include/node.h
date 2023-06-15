@@ -20,6 +20,6 @@ void head_node(const char* filename, bool header);
  * These nodes will be send all of the information they need from the head node.
  *
  */
-void data_node();
+void data_node(bool inverse);
 
 #endif  // NODE_H_INCLUDED

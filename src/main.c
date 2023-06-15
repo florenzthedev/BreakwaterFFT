@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
   if (node_id == 0)
     head_node(bopts.infilename, bopts.header);
   else
-    data_node(node_id);
+    data_node(bopts.inverse);
 
   log_msg(LOG__INFO, "Finished!");
   msg_finalize();
